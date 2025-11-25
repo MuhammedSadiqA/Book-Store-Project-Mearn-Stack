@@ -19,7 +19,7 @@ function App() {
   const [loading,setLoading]=useState(true)
   setTimeout(()=>{
     setLoading(false)
-  },7500)
+  },1000)
 
   return (
     <>
