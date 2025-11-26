@@ -1,8 +1,60 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { FaEye, FaEyeSlash, FaUser } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
 
-function Auth() {
+
+
+function Auth({ insideRegister }) {
+  const [viewPassword, setViewPassword] = useState(false)
+
+
+
   return (
-    <div>Auth</div>
+    <div className="w-full min-h-screen flex justify-center items-center flex-col bg-[url(/auth-bg.jpg)] bg-cover bg-center ">
+      <div className='p-10'>
+        <h1 className='text-3xl font-bold text-white text-center'>BOOK STORE</h1>
+        <div style={{ width: '400px' }} className='bg-black text-white p-5  flex flex-col justify-center items-center my-5'>
+          <div style={{ width: '100px', height: '100px', borderRadius: '50%' }}
+            className='border mb-5 flex justify-center items-center'>
+            <FaUser className='text-3xl' />
+          </div>
+          <h2 className='text-2xl'>{insideRegister ? "Register" : "Login"}</h2>
+          <form className='my-5 w-full'>
+            {/* username */}
+            <input type="text" placeholder='Username' className='bg-white text-black textd-black placeholder-gray-400 w-full p-2 rounded my-5' />
+            {/* email */}
+            <input type="text" placeholder='Email ID' className='bg-white text-black placeholder-gray-400 w-full p-2 rounded my-5' />
+            {/* password */}
+            <div className='flex items-center'>
+              <input type={viewPassword?"text":"password"} placeholder='Password' className='bg-white text-black placeholder-gray-300 w-full p-2 rounded mb-5 ' />
+              {
+                viewPassword ?
+                  <FaEyeSlash onClick={()=>setViewPassword(!viewPassword)} className='text-gray-400 cursor-pointer' style={{ marginLeft: '-30px', marginTop: '-20px' }} />
+                  :
+                  <FaEye onClick={()=>setViewPassword(!viewPassword)}  className='text-gray-400 cursor-pointer' style={{ marginLeft: '-30px', marginTop: '-20px' }} />
+              }
+            </div>
+            {/* Login/Register Btn */}
+            {
+              !insideRegister &&
+              <div className='flex justify-between mb-5'>
+                <p className='text-xs text-orange-300'>Never Share Your password with others</p>
+                <button className='text-xs underline'>Forget Password</button>
+              </div>
+            }
+            {/* google authentication */}
+            <div className='text-center'>
+              {
+                insideRegister ?
+                  <button className='text-blue-600'>Already a user? <Link to={'/login'} className='underline ms-5' ></Link>Login</button>
+                  :
+                  <p className='text-blue-600'>Already a user ? <Link to={'/register'} className='underline ms-5'></Link>Register</p>
+              }
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   )
 }
 
