@@ -1,13 +1,87 @@
 import React, { useState } from 'react'
 import { FaEye, FaEyeSlash, FaUser } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify';
+import { loginAPI, registerAPI } from '../services/allAPI';
 
 
 
 function Auth({ insideRegister }) {
+
+  const navigate = useNavigate()
   const [viewPassword, setViewPassword] = useState(false)
 
+  const [userDetails, setUserDetails] = useState({
+    username: "", email: "", password: ""
+  })
+  console.log(userDetails);
 
+  const handleRegister = async (e) => {
+    e.preventDefault()
+    const { username, email, password } = userDetails
+    if (email && password && username) {
+      // toast.success("Api call")
+      try {
+        const result = await registerAPI(userDetails)
+        console.log(result);
+
+        if (result.status == 200) {
+          toast.success(`register Successfully... Please Login to Dashboard`)
+          setUserDetails({ username: "", email: "", password: "" })
+          navigate('/login')
+        }
+        else if (result.status == 409) {
+          toast.warning(result.response.data)
+          setUserDetails({ username: "", email: "", password: "" })
+          navigate('/login')
+        }
+        else {
+          console.log(result);
+          toast.error("Something went wrong")
+          setUserDetails({ username: "", email: "", password: "" })
+        }
+      } catch (error) {
+        console.log(error);
+
+      }
+    } else {
+      toast.info("Please fill the form completely")
+    }
+  }
+
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    const { email, password } = userDetails
+    if (email && password) {
+      try {
+        // api call
+        const result = await loginAPI(userDetails)
+        console.log(result)
+        if (result.status == 200) {
+          toast.success("Login Successfull!!")
+          sessionStorage.setItem("token", result.data.token)
+          sessionStorage.setItem("user", JSON.stringify(result.data.user))
+          setTimeout(() => {
+            if (result.data.user.role == "admin") {
+              navigate('/admin/home')
+            } else {
+              navigate('/')
+            }
+          }, 2500)
+        } else if (result.status == 401 || result.status == 404) {
+          toast.warning(result.response.data)
+          setUserDetails({ username: "", email: "", password: "" })
+        } else {
+          toast.error("something went wrong!!!")
+          setUserDetails({ username: "", email: "", password: "" })
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      toast.info("please fill the form completely")
+    }
+  }
 
   return (
     <div className="w-full min-h-screen flex justify-center items-center flex-col bg-[url(/auth-bg.jpg)] bg-cover bg-center ">
@@ -21,20 +95,21 @@ function Auth({ insideRegister }) {
           <h2 className='text-2xl'>{insideRegister ? "Register" : "Login"}</h2>
           <form className='my-5 w-full'>
             {/* username */}
-            <input type="text" placeholder='Username' className='bg-white text-black textd-black placeholder-gray-400 w-full p-2 rounded my-5' />
+            {
+              insideRegister &&
+              <input value={userDetails.username} onChange={(e) => setUserDetails({ ...userDetails, username: e.target.value })} type="text" placeholder='Username' className='bg-white text-black textd-black placeholder-gray-400 w-full p-2 rounded my-5' />}
             {/* email */}
-            <input type="text" placeholder='Email ID' className='bg-white text-black placeholder-gray-400 w-full p-2 rounded my-5' />
+            <input value={userDetails.email} onChange={(e) => setUserDetails({ ...userDetails, email: e.target.value })} type="text" placeholder='Email ID' className='bg-white text-black placeholder-gray-400 w-full p-2 rounded my-5' />
             {/* password */}
             <div className='flex items-center'>
-              <input type={viewPassword?"text":"password"} placeholder='Password' className='bg-white text-black placeholder-gray-300 w-full p-2 rounded mb-5 ' />
+              <input value={userDetails.password} onChange={(e) => setUserDetails({ ...userDetails, password: e.target.value })} type={viewPassword ? "text" : "password"} placeholder='Password' className='bg-white text-black placeholder-gray-300 w-full p-2 rounded mb-5 ' />
               {
                 viewPassword ?
-                  <FaEyeSlash onClick={()=>setViewPassword(!viewPassword)} className='text-gray-400 cursor-pointer' style={{ marginLeft: '-30px', marginTop: '-20px' }} />
+                  <FaEyeSlash onClick={() => setViewPassword(!viewPassword)} className='text-gray-400 cursor-pointer' style={{ marginLeft: '-30px', marginTop: '-20px' }} />
                   :
-                  <FaEye onClick={()=>setViewPassword(!viewPassword)}  className='text-gray-400 cursor-pointer' style={{ marginLeft: '-30px', marginTop: '-20px' }} />
+                  <FaEye onClick={() => setViewPassword(!viewPassword)} className='text-gray-400 cursor-pointer' style={{ marginLeft: '-30px', marginTop: '-20px' }} />
               }
             </div>
-            {/* Login/Register Btn */}
             {
               !insideRegister &&
               <div className='flex justify-between mb-5'>
@@ -42,18 +117,31 @@ function Auth({ insideRegister }) {
                 <button className='text-xs underline'>Forget Password</button>
               </div>
             }
+            {/* Login/Register Btn */}
+            {
+              insideRegister ?
+                <button type='button' onClick={handleRegister}>Register</button>
+                :
+                <button className='btn bg-green-400 rounded p-1 ' onClick={handleLogin} >Login</button>
+            }
             {/* google authentication */}
             <div className='text-center'>
               {
                 insideRegister ?
-                  <button className='text-blue-600'>Already a user? <Link to={'/login'} className='underline ms-5' ></Link>Login</button>
+                  <p className='text-blue-600'>Already a user? <Link to={'/login'} className='underline ms-5' >Login</Link></p>
                   :
-                  <p className='text-blue-600'>Already a user ? <Link to={'/register'} className='underline ms-5'></Link>Register</p>
+                  <p className='text-blue-600'>New user ? <Link to={'/register'} className='underline ms-5'>Register</Link></p>
               }
             </div>
           </form>
         </div>
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        theme="colored"
+      />
+
     </div>
   )
 }
