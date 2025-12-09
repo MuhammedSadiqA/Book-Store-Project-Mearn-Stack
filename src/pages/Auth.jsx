@@ -3,6 +3,8 @@ import { FaEye, FaEyeSlash, FaUser } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify';
 import { loginAPI, registerAPI } from '../services/allAPI';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from 'jwt-decode';
 
 
 
@@ -82,6 +84,10 @@ function Auth({ insideRegister }) {
       toast.info("please fill the form completely")
     }
   }
+  const handleGoogleLogin=async (credentialResponse)=>{
+    console.log("Inside handleGoogleLogin")
+    console.log(credentialResponse);
+  }
 
   return (
     <div className="w-full min-h-screen flex justify-center items-center flex-col bg-[url(/auth-bg.jpg)] bg-cover bg-center ">
@@ -122,9 +128,28 @@ function Auth({ insideRegister }) {
               insideRegister ?
                 <button type='button' onClick={handleRegister}>Register</button>
                 :
-                <button className='btn bg-green-400 rounded p-1 ' onClick={handleLogin} >Login</button>
+                <button className='btn bg-green-400 rounded p-1 px-40 ' onClick={handleLogin} >Login</button>
             }
             {/* google authentication */}
+            <div className="text-center my-5">
+              {!insideRegister && <p>----------------or------------------</p>}
+              {
+                !insideRegister &&
+                <div className='my-5 flex justify-center items-center w-full'>
+                  <GoogleLogin
+                    onSuccess={credentialResponse => {
+                      handleGoogleLogin(credentialResponse)
+                      const decode =jwtDecode(credentialResponse.credential)
+                      console.log(decode);
+                      
+                    }}
+                    onError={() => {
+                      console.log('Login Failed');
+                    }}
+                  />
+                </div>
+              }
+            </div>
             <div className='text-center'>
               {
                 insideRegister ?
