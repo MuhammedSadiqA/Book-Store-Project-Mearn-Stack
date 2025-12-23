@@ -1,29 +1,36 @@
 import React, { useEffect, useState } from 'react'
 import { FaAddressCard, FaBars, FaFacebookSquare, FaInstagramSquare, FaPowerOff, FaUser } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaUserCircle } from "react-icons/fa";
-
+import serverURL from "../../services/serverURL"
 
 
 function Header() {
-  const [dp,setDp]=useState("")
-  const [token,setToken]=useState("")
-  const [dropDown,setDropDown]=useState(false)
-
-  useEffect(()=>{
-    if(sessionStorage.getItem("token")){
-      const userToken=sessionStorage.getItem("token")
+  const [dp, setDp] = useState("")
+  const [token, setToken] = useState("")
+  const [dropDown, setDropDown] = useState(false)
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (sessionStorage.getItem("token")) {
+      const userToken = sessionStorage.getItem("token")
       setToken(userToken)
-      const user=JSON.parse(sessionStorage.getItem("user"))
-      setDp(user.picture)
+      const user = JSON.parse(sessionStorage.getItem("user"))
+      setDp(user?.picture)
     }
-  },[token])
+  }, [token])
 
+  const logout = () => {
+    sessionStorage.clear()
+    setToken("")
+    setDp("")
+    setDropDown(false)
+    setListStatus(false)
+    navigate('/')
+  }
 
-
-  const [listStatus,setListStatus]=useState(false)
-  const menuBtnClick=()=>{
+  const [listStatus, setListStatus] = useState(false)
+  const menuBtnClick = () => {
     setListStatus(!listStatus)
   }
 
@@ -49,26 +56,26 @@ function Header() {
           <FaXTwitter />
 
           {
-            !token?
-             <Link to={'/login'} className='border ms-4 border rounded py-1 px-2 hover:bg-black hover:text-white flex items-center'> <FaUserCircle className='me-2' />
-            Login</Link>
-            :
-            <div className="relative inline-block text-left ms-2">
-              <button onClick={()=>setDropDown(!dropDown)} className='w-full bg-white px-3 py-2 shadow hover:bg-gray-50'>
-              <img width={'40px'} height={'40px'} style={{BorderRadius:'50%'}} src="https://gimgs2.nohat.cc/thumb/f/640/youtube-video-photography-user-profile-avatar-youtube--5006114642984960.jpg" alt="profile picture" />
-              </button>
-              {
-                dropDown&&
-                <div className="absolute right-0 z-10 mt-2 w-40 rounded-md bg-white shadow-lg origin-top-right ring-1 ring-black/5 
+            !token ?
+              <Link to={'/login'} className='border ms-4 border rounded py-1 px-2 hover:bg-black hover:text-white flex items-center'> <FaUserCircle className='me-2' />
+                Login</Link>
+              :
+              <div className="relative inline-block text-left ms-2">
+                <button onClick={() => setDropDown(!dropDown)} className='w-full bg-white px-3 py-2 shadow hover:bg-gray-50'>
+                  <img width={'40px'} height={'40px'} style={{ BorderRadius: '50%' }} src={dp ? dp.startsWith("https://lh3.googleusercontent.com/")?dp:`${serverURL}/uploads/${dp}` : "https://gimgs2.nohat.cc/thumb/f/640/youtube-video-photography-user-profile-avatar-youtube--5006114642984960.jpg"} alt="profile picture" />
+                </button>
+                {
+                  dropDown &&
+                  <div className="absolute right-0 z-10 mt-2 w-40 rounded-md bg-white shadow-lg origin-top-right ring-1 ring-black/5 
               focus:outline-hidden">
-                <Link to={'/user/profile'} className='block px-4 py-2 text-sm text-gray-700 flex items-center'>
-                  <FaAddressCard className='me-2'/> Profile</Link>
-                <button className='px-4 py-2 text-sm text-gray-700 flex items-center'><FaPowerOff className='me-2'/>Logout</button>
+                    <Link to={'/user/profile'} className='block px-4 py-2 text-sm text-gray-700 flex items-center'>
+                      <FaAddressCard className='me-2' /> Profile</Link>
+                    <button onClick={logout} className='px-4 py-2 text-sm text-gray-700 flex items-center'><FaPowerOff className='me-2' />Logout</button>
+                  </div>
+                }
               </div>
-              }
-            </div>
           }
-         
+
         </div>
       </div>
       {/* Header lower part */}
@@ -79,28 +86,28 @@ function Header() {
           <button onClick={menuBtnClick} ><FaBars /></button>
           {/* login Link */}
           {
-            !token?
-             <Link to={'/login'} className='border ms-4 border rounded py-1 px-2 hover:bg-black hover:text-white flex items-center'> <FaUserCircle className='me-2' />
-            Login</Link>
-            :
-            <div className="relative inline-block text-left ms-2">
-              <button onClick={()=>setDropDown(!dropDown)} className='w-full bg-white px-3 py-2 shadow hover:bg-gray-50'>
-              <img width={'40px'} height={'40px'} style={{BorderRadius:'50%'}} src="https://gimgs2.nohat.cc/thumb/f/640/youtube-video-photography-user-profile-avatar-youtube--5006114642984960.jpg" alt="profile picture" />
-              </button>
-              {
-                dropDown&&
-                <div className="absolute right-0 z-10 mt-2 w-40 rounded-md bg-white shadow-lg origin-top-right ring-1 ring-black/5 
+            !token ?
+              <Link to={'/login'} className='border ms-4 border rounded py-1 px-2 hover:bg-black hover:text-white flex items-center'> <FaUserCircle className='me-2' />
+                Login</Link>
+              :
+              <div className="relative inline-block text-left ms-2">
+                <button onClick={() => setDropDown(!dropDown)} className='w-full bg-white px-3 py-2 shadow hover:bg-gray-50'>
+                  <img width={'40px'} height={'40px'} style={{ BorderRadius: '50%' }}src={dp ? dp.startsWith("https://lh3.googleusercontent.com/")?dp:`${serverURL}/uploads/${dp}` : "https://gimgs2.nohat.cc/thumb/f/640/youtube-video-photography-user-profile-avatar-youtube--5006114642984960.jpg"} alt="profile picture" />
+                </button>
+                {
+                  dropDown &&
+                  <div className="absolute right-0 z-10 mt-2 w-40 rounded-md bg-white shadow-lg origin-top-right ring-1 ring-black/5 
               focus:outline-hidden">
-                <Link to={'/user/profile'} className='block px-4 py-2 text-sm text-gray-700 flex items-center'>
-                  <FaAddressCard className='me-2'/> Profile</Link>
-                <button className='px-4 py-2 text-sm text-gray-700 flex items-center'><FaPowerOff className='me-2'/>Logout</button>
+                    <Link to={'/user/profile'} className='block px-4 py-2 text-sm text-gray-700 flex items-center'>
+                      <FaAddressCard className='me-2' /> Profile</Link>
+                    <button onClick={logout} className='px-4 py-2 text-sm text-gray-700 flex items-center'><FaPowerOff className='me-2' />Logout</button>
+                  </div>
+                }
               </div>
-              }
-            </div>
           }
         </div>
         {/* Ul link */}
-        <ul className={listStatus?"flex flex-col":"md:flex justify-center items-center hidden"}>
+        <ul className={listStatus ? "flex flex-col" : "md:flex justify-center items-center hidden"}>
           <li><Link to={'/'} className='md:mx-4 mt-3 md:mt-0  '>Home</Link></li>
           <li><Link to={'/books'} className='md:mx-4  mt-3 md:my-0 '>Books</Link></li>
           <li><Link to={'/contact'} className='md:mx-4  mt-3 md:mb-0 '>Contact</Link></li>

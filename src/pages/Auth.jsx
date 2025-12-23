@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { FaEye, FaEyeSlash, FaUser } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify';
-import { loginAPI, registerAPI } from '../services/allAPI';
+import { loginAPI, registerAPI,googleLoginAPI } from '../services/allAPI';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 
@@ -84,9 +84,30 @@ function Auth({ insideRegister }) {
       toast.info("please fill the form completely")
     }
   }
-  const handleGoogleLogin=async (credentialResponse)=>{
+  const handleGoogleLogin = async (credentialResponse) => {
     console.log("Inside handleGoogleLogin")
     console.log(credentialResponse);
+    const decode = jwtDecode(credentialResponse.credential)
+    console.log(decode);
+    // email name picture
+    const result = await googleLoginAPI({ username: decode.name, email: decode.email, password: "googlePassword", picture: decode.picture })
+    if (result.status == 200) {
+      toast.success("Login successfull!!")
+      sessionStorage.setItem("token", result.data.token)
+          sessionStorage.setItem("user", JSON.stringify(result.data.user))
+      setTimeout(()=>{
+        if(result.data.user.role=="admin"){
+          navigate('/admin/home')
+        }else{
+          navigate('/')
+        }
+      },2500)
+
+    }else{
+      console.log(result);
+      toast.error("something went wrong")
+      
+    }
   }
 
   return (
@@ -139,9 +160,9 @@ function Auth({ insideRegister }) {
                   <GoogleLogin
                     onSuccess={credentialResponse => {
                       handleGoogleLogin(credentialResponse)
-                      const decode =jwtDecode(credentialResponse.credential)
+                      const decode = jwtDecode(credentialResponse.credential)
                       console.log(decode);
-                      
+
                     }}
                     onError={() => {
                       console.log('Login Failed');

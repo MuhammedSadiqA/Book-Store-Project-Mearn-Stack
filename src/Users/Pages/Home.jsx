@@ -1,136 +1,142 @@
-import React, {  useState } from 'react'
-import Header from '../Components/Header'
-import Footer from '../../Components/Footer'
+import React, { useContext, useState } from 'react'
+import Footer from '../../components/Footer'
 import { FaSearch } from 'react-icons/fa'
-import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify'
+import { useEffect } from 'react'
+import { getHomePageBookAPI } from '../../services/allAPI'
+import { searchContext } from '../../contextAPI/ShareContext'
+import Header from '../Components/Header'
+
+
 function Home() {
-  const [searchkey,setSearchkey]=useState("")
-  const navigate=useNavigate()
-  const handleSearch=()=>{
-    if(!searchkey){
-      toast.warning("Please provide A Book title here")
-    }else if(!sessionStorage.getItem("token")){
-      toast.warning("Please Login to Search Book!!")
-      setTimeout(()=>{
-      navigate('/login')
-      },2500)
-    }else if(sessionStorage.getItem("token")&&searchkey){
-      navigate('/books')
-    }else{
-      toast.error("Something Went Wrong")
-    }
+  const navigate = useNavigate()
+// const [searchKey,setsearchKey] = useState("")
+const {searchKey,setsearchKey} = useContext(searchContext)
+const [homeBooks,setHomeBooks] = useState([])
+
+console.log(homeBooks);
+
+useEffect(()=>{
+  getHomeBooks()
+},[])
+
+const getHomeBooks = async ()=>{
+  const result = await getHomePageBookAPI()
+  if (result.status==200) {
+    setHomeBooks(result.data)
+    
+  }else{
+    console.log(result);
+    
   }
+}
+
+const handleSearch = ()=>{
+  if (!searchKey) {
+    toast.warning("please provide A book title here")
+    
+  }else if (!sessionStorage.getItem("token")) {
+        toast.warning("please login to search book")
+   setTimeout(()=>{
+    navigate('/login')
+   },2500);
+    
+  }else if(sessionStorage.getItem("token")&& searchKey){
+    navigate('/books')
+  }else{
+    toast.error("something went wrong")
+  }
+  
+}
 
   return (
+
     <>
-      <Header />
-      <div>
-        {/* landing Part - search */}
-        <div style={{ height: '600px' }} className='flex justify-center items-center flex-col bg-[url(/bg-img.jpg)] bg-cover bg-center text-white'>
-          <div style={{ height: '600px', backgroundColor: 'rgba(0,0,0,0.4)' }}
-            className='w-full flex justify-center items-center flex-col'>
-            <h1 className='text-5xl font-bold mb-2'>wonderfull Gifts</h1>
-            <p>Gift Your family and friends a book</p>
-            {/* search */}
-            <div className='mt-9 flex items-center'>
-              <input  onChange={e=>setSearchkey(e.target.value)} type="text" className='bg-white rounded-3xl text-black w-100 placeholder-grey-500 p-2' placeholder='Search Books Here' />
-              <button onClick={handleSearch} className='text-gray-500 ms-4 '><FaSearch /></button>
-            </div>
-          </div>
-        </div>
-        {/* New arroval */}
-        <section className='md:px-40 p-5 my-5 flex flex-col justify-center items-center'>
-          <h1 className='text-3xl font-bold'>NEW ARRIVALS</h1>
-          <h2 className='text-2xl'>Explore Our Latest Collection</h2>
-          {/* books row & col */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-10">
-            <div className="shadow rounded p-3">
-              <img
-                width="300"
-                height="300"
-                src="https://m.media-amazon.com/images/I/61WVp4iq69L._AC_UF1000,1000_QL80_.jpg"
-                alt="Book"
-              />
-              <div className='flex justify-center items-center flex-col mt-4'>
-                <h3 className='text-blue-600 font-bold text-lg'>Author</h3>
-                <h4>$ price</h4>
-              </div>
-            </div>
-
-            {/* repeat the card */}
-            <div className="shadow rounded p-3">
-              <img
-                width="300"
-                height="300"
-                src="https://m.media-amazon.com/images/I/61WVp4iq69L._AC_UF1000,1000_QL80_.jpg"
-                alt="Book"
-              />
-              <div className='flex justify-center items-center flex-col mt-4'>
-                <h3 className='text-blue-600 font-bold text-lg'>Author</h3>
-                <h4>$ price</h4>
-              </div>
-            </div>
-
-            <div className="shadow rounded p-3">
-              <img
-                width="300"
-                height="300"
-                src="https://m.media-amazon.com/images/I/61WVp4iq69L._AC_UF1000,1000_QL80_.jpg"
-                alt="Book"
-              />
-              <div className='flex justify-center items-center flex-col mt-4'>
-                <h3 className='text-blue-600 font-bold text-lg'>Author</h3>
-                <h4>$ price</h4>
-              </div>
-            </div>
-
-            <div className="shadow rounded p-3">
-              <img
-                width="300"
-                height="300"
-                src="https://m.media-amazon.com/images/I/61WVp4iq69L._AC_UF1000,1000_QL80_.jpg"
-                alt="Book"
-              />
-              <div className='flex justify-center items-center flex-col mt-4'>
-                <h3 className='text-blue-600 font-bold text-lg'>Author</h3>
-                <h4>$ price</h4>
-              </div>
-            </div>
-          </div>
+    <Header/>
+   <div>
+    {/* landing part - search */}
+    <div style={{height:"590px"}} className='flex justify-center items-center flex-col bg-[url(/bg-image.png)] bg-cover bg-center text-white' >
+  <div style={{height:"590px",backgroundColor:'rgba(0,0,0,0.4)'}} className='w-full flex justify-center items-center flex-col text-white' >
+    <h1 className='text-5xl font-bold mb-2' >Wonderful Gifts</h1>
+    <p >Gift Your Family and Friends  Book</p>
+{/* search */}
+<div className='mt-9 flex items-center' >
+  <input onChange={e=>setsearchKey(e.target.value)} type="text" className='bg-white rounded-3xl text-black w-90 placeholder-gray-500 p-2' placeholder='search books here' />
+<button onClick={handleSearch} className='text-gray-500' style={{marginLeft:"-40px"}} >
+   <FaSearch/>
+  
+</button>
+</div>
+    </div>
+    </div>
+    {/* new arrival */}
+    <section className='md:px-40 p-5 flex flex-col  justify-center items-center' >
+      <h1 className='text-3xl font-bold' >NEW ARRIVAL</h1>
+      <h2 className='text-2xl' >Explore Our Latest Collection</h2>
+{/* books row & col */}
+<div className="md:grid grid-cols-4 w-full mt-10">
+  {/* duplicate book card div */}
+ {
+  homeBooks?.length>0?
+homeBooks?.map(book=>(
+   <div key={book?._id} className='shadow  rounded p-3 mx-4 mb-5 md:mb-0' >
+    <img width={'200px'} height={'200px'} src={book?.imageURL} alt="books" />
+<div className='flex justify-center items-center flex-col mt-4' >
+  <h3 className='text-blue-600 font-bold text-lg' >{book?.author}</h3>
+  <h4 className='text-lg' >{book?.title}</h4>
+  <h4>$ {book?.discountPrice}</h4>
+</div>
+  </div>
+))
+  :
+  <p>Loading.....</p>
+ }
 
 
-        </section>
-        {/* author */}
-        <section className='md:px-40 p-5 my-5 md:grid grid-cols-2 items-center gap-10'>
-          <div className="text-center">
-            <h1 className='text-3xl font-bold'>NEW ARRIVALS</h1>
-            <h2 className='text-2xl'>Explore Our Latest Collection</h2>
-            <p className='text-justify mt-9'>Johnathan Reed is a contemporary storyteller known for blending emotional depth with simple, powerful language. His works often explore family, faith, and the quiet moments that shape a person’s life. With a warm writing style and a traditional outlook, he brings timeless values into modern narratives. When he’s not writing, he spends his time reading, traveling, and connecting with young readers who dream big.</p>
-            <p className='text-justify mt-5' >Strong writing skills are built on clarity, consistency, and the courage to express ideas with honesty. Great writers understand the power of simple language, choosing words that connect rather than confuse. Whether crafting stories, explaining concepts, or sharing emotions, good writing blends structure with creativity. It grows through reading, observing life closely, and practicing daily. With time, these habits shape a writer who can communicate with confidence, touch hearts, and carry their voice across generations.</p>
-          </div>
-          {/* Author image */}
-          <div className='p-5 flex justify-center items-center'>
-            <img className='w-full' src="https://lh3.googleusercontent.com/qZJi3ZT3nt8AWhLDFaWWu-qUtfg1QOrAPXoZtb_kxebFnoh-vDNdQIm0M9Y-xYZtPpx2E6Q4YmPZprY0nswYZFMlYAMZYU8qGNg=w974" alt="author image loading / err " />
-          </div>
-        </section>
+</div>
+{/* all books link */}
+<div className="text-center">
+<Link to={'/books'}>  <button className="p-2 bg-blue-600 text-white mt-10 rounded">Explore More</button></Link>
+</div>
+    </section>
+    {/* author */}
+    <section  className='md:px-40 p-5 my-5 md:grid grid-cols-2 items-center gap-10' >
+      {/* author content */}
+      <div className='text-center'>
+      <h1 className='text-3xl font-bold' >FEATURED AUTHOR</h1>
+       <h2 className='text-2xl' >Crafting Stories That Stay With You</h2>
+      <p className='text-justify mt-10' >Paulo Coelho is an internationally acclaimed Brazilian author best known for his masterpiece The Alchemist, one of the most widely read and translated books in the world. His writing blends spirituality, self-discovery, and universal wisdom, touching millions of readers across generations.</p>
 
-        {/* testimony */}
-
-        <section className='md:px-40 p-5 my-5 flex flex-col justify-center items-center'>
-          <h1 className='text-3xl font-bold'>Testimonials</h1>
-          <h2 className='text-2xl'>See what Others Are Saying</h2>
-          <div className="my-5 flex justify-center items-center flex-col">
-          {/* user Image */}
-          <img width={'200px'} height={'200px'} style={{borderRadius:'50%'}} src="https://images.ctfassets.net/xjcz23wx147q/iegram9XLv7h3GemB5vUR/0345811de2da23fafc79bd00b8e5f1c6/Max_Rehkopf_200x200.jpeg" alt="User image " />
-           <p className='text-justify mt-4'><span className='font-bold me-2' >User feedback plays a crucial role in </span>shaping better experiences, helping creators understand what truly works and what needs improvement. It offers real, unfiltered insight into how people think, feel, and interact with a product or service. When handled with openness and humility, feedback becomes a powerful tool for growth, guiding updates, refining features, and strengthening trust. It’s not just criticism — it’s a conversation that pushes ideas forward and builds a stronger connection with the community.</p>
-          </div>
-         
-        </section>
+  <p className='text-justify mt-5' >With a unique ability to turn simple stories into profound life lessons, Coelho inspires readers to follow their dreams, trust their journey, and listen to their hearts. His works continue to shape modern literature and motivate people to find purpose and meaning in everyday life.</p>
+        
       </div>
-      <Footer />
+{/* author img */}
+<div className='p-5 flex justify-center items-center' >
+  <img className='w-full' src="https://cdn.britannica.com/67/126567-050-A5C3A312/Paulo-Coelho-departure-themes-thriller-serial-killer-2008.jpg" alt="author img" />
 
-
+</div>
+    </section>
+    {/* testimony */}
+      <section className='md:px-40 p-5 flex flex-col  justify-center items-center' >
+      <h1 className='text-3xl font-bold' >TESTMONIALS </h1>
+      <h2 className='text-2xl' >See What Others Are Saying</h2>
+      <div className='my-10 flex justify-center items-center flex-col' >
+{/* user img */}
+<img width={'200px'} height={'200px'} style={{borderRadius:'50%'}} src="https://mobilenetrix.com/assets/client/app/media/img/users/profile_user.jpg" alt="user img" />
+{/* feedback */}
+<p className='mt-5 font-bold ' >Damon Salvator</p>
+<p className=' text-justify mt-4' ><span className='font-bold me-2' >"The book has a strong foundation with interesting ideas and relatable characters"</span>I particularly enjoyed the plot development in the first half. However, a few sections felt slightly rushed and could benefit from deeper explanation. Still, a very enjoyable and worthwhile read.</p>
+      </div>
+    </section>
+   </div>
+    <Footer/>
+       {/* toast container */}
+          <ToastContainer
+            position="top-center"
+            autoClose={2000}
+            theme="colored"
+          />
     </>
   )
 }
