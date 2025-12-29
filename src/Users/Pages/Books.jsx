@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { getAllBooksPageAPI } from '../../services/allAPI'
 import { searchContext } from '../../contextAPI/ShareContext'
 import Footer from '../../components/Footer'
-import Header from '../Components/Header'
+import Header from '../components/Header'
 
 
 function Books() {
@@ -114,12 +114,12 @@ if (result.status==200) {
   {
     allBooks?.length>0 ?
     allBooks?.map(book=>(
-        <div key={book?._id} className='shadow  rounded p-3 mx-4 mb-5 md:mb-0' >
+        <div key={book?._id} className='shadow  rounded p-3 mx-4 mb-5 md:mb-0' hidden={book?.status!="approved"} >
     <img width={'200px'} height={'200px'} src={book?.imageURL} alt="books" />
-<div className='flex justify-center items-center flex-col mt-4' >
+<div className='flex justify-center items-center flex-col mt-4' > 
   <h3 className='text-blue-600 font-bold text-lg' >{book?.author}</h3>
   <h4 className='text-lg text-center' >{book?.title}</h4>
-  <Link to={`/books/${book?._id}`/view} className='bg-black py-2 px-5 mt-2 text-white' >View</Link>
+  <Link to={`/books/${book?._id}/view`} className='bg-black py-2 px-5 mt-2 text-white' >View</Link>
 </div>
   </div>
     ))

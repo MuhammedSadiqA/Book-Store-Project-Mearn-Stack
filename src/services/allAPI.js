@@ -54,3 +54,10 @@ export const editUserAPI=async (id,reqBody,reqHeader)=>{
   return await CommonAPI("PUT",`${serverURL}/user/${id}/edit`,reqBody,reqHeader)
 }
 
+//admin-books/all : admin bookpage api: called by adminResources component when page loads -authorised user
+export const getAllAdminBooksAPI=async (reqHeader)=>{
+  return await CommonAPI("GET",`${serverURL}/admin-books/all`,{},reqHeader)
+}
+
+
+
