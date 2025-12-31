@@ -5,8 +5,8 @@ import Edit from '../components/Edit'
 import BookStatus from '../components/BookStatus'
 import SellBook from '../Components/SellBook'
 import Purchase from '../Components/Purchase'
-import Header from '../Components/Header'
 import serverURL from '../../services/serverURL'
+import Header from '../components/Header'
 
 function Profile() {
   const [tab,setTab]= useState(1)

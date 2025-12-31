@@ -12,7 +12,8 @@ import View from './Users/Pages/View'
 import { Route,Routes } from 'react-router-dom'
 import Preloader from './Components/Preloader'
 import { useState } from 'react'
-
+import PaymentError from './Users/Pages/PaymentError'
+import PaymentSuccess from './Users/Pages/PaymentSuccess'
 
 function App() {
 
@@ -30,8 +31,11 @@ function App() {
         <Route path='/contact' element={<Contact/>} />
         <Route path='/books' element={<Books/>} />
 
+
         <Route path='/user/profile' element={<Profile />} />
         <Route path='/books/:id/view' element={<View />} />
+        <Route path='/user/payment-success' element={<PaymentSuccess />} />
+        <Route path='/books/payment-error' element={<PaymentError />} />
 
         <Route path='/admin/home' element={<AdminHome />} />
         <Route path='/admin/profile' element={<AdminProfile />} />

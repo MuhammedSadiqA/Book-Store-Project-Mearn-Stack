@@ -22,11 +22,7 @@ function Header() {
 
   const logout = () => {
     sessionStorage.clear()
-    setToken("")
-    setDp("")
-    setDropDown(false)
-    setListStatus(false)
-    navigate('/')
+    navigate('/login')
   }
 
   const [listStatus, setListStatus] = useState(false)
